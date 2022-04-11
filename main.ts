@@ -1,7 +1,3 @@
-/**
- * Line Tracing For Powerbrick  blocks
- */
-//% weight=100 color=#0fbc11 icon=""
 namespace lineTracingForPowerbrick {
 
     const PCA9685_ADDRESS = 0x40
@@ -60,9 +56,9 @@ namespace lineTracingForPowerbrick {
     }
 
     function i2ccmd(addr: number, value: number) {
-        let buf = pins.createBuffer(1)
-        buf[0] = value
-        pins.i2cWriteBuffer(addr, buf)
+        let buf2 = pins.createBuffer(1)
+        buf2[0] = value
+        pins.i2cWriteBuffer(addr, buf2)
     }
 
 
@@ -91,13 +87,13 @@ namespace lineTracingForPowerbrick {
     function setPwm(channel: number, on: number, off: number): void {
         if (channel < 0 || channel > 15)
             return;
-        let buf = pins.createBuffer(5);
-        buf[0] = LED0_ON_L + 4 * channel;
-        buf[1] = on & 0xff;
-        buf[2] = (on >> 8) & 0xff;
-        buf[3] = off & 0xff;
-        buf[4] = (off >> 8) & 0xff;
-        pins.i2cWriteBuffer(PCA9685_ADDRESS, buf);
+        let buf3 = pins.createBuffer(5);
+        buf3[0] = LED0_ON_L + 4 * channel;
+        buf3[1] = on & 0xff;
+        buf3[2] = (on >> 8) & 0xff;
+        buf3[3] = off & 0xff;
+        buf3[4] = (off >> 8) & 0xff;
+        pins.i2cWriteBuffer(PCA9685_ADDRESS, buf3);
     }
 
     function initPCA9685(): void {
@@ -167,4 +163,3 @@ namespace lineTracingForPowerbrick {
         }
     }
 }
-
