@@ -130,6 +130,12 @@ namespace lineTracingForPowerbrick {
         }
     }
 
+    //blockId=haha block="HaHa|huhu %hehe|huhu %hihi"
+    //% group="gaga" weight=81
+    export function HaHa(hehe:string, hihi:string): void{
+
+    }
+
 
     //% blockId=custom_motor_dual block="Motor|speed %speed1|speed %speed2"
     //% weight=43
