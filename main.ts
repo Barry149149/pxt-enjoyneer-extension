@@ -1,4 +1,4 @@
-namespace lineTracingForPowerbrick {
+namespace ExtensionBoard {
 
     const PCA9685_ADDRESS = 0x40
     const MODE1 = 0x00
@@ -46,6 +46,15 @@ namespace lineTracingForPowerbrick {
     export enum Motors {
         M1 = 0x1,
         M2 = 0x2
+    }
+
+    export enum DHT11Type {
+        //% block=temperature(°C)
+        TemperatureC = 0,
+        //% block=temperature(°F)
+        TemperatureF = 1,
+        //% block=humidity
+        Humidity = 2
     }
 
     function i2cwrite(addr: number, reg: number, value: number) {
@@ -130,14 +139,113 @@ namespace lineTracingForPowerbrick {
         }
     }
 
-    //blockId=haha block="HaHa|huhu %hehe|huhu %hihi"
+    //% blockId=dht11 block="DHT11|port %port|type %readtype"
+    //% weight=60
+    //% group="Environment" blockGap=50
+    export function DHT11(port: Ports, readtype: DHT11Type): number {
+        let dht11pin = PortDigi[port][0]
+
+        pins.digitalWritePin(dht11pin, 0)
+        basic.pause(18)
+        let i = pins.digitalReadPin(dht11pin)
+        pins.setPull(dht11pin, PinPullMode.PullUp);
+        switch (readtype) {
+            case 0:
+                let dhtvalue1 = 0;
+                let dhtcounter1 = 0;
+                while (pins.digitalReadPin(dht11pin) == 1);
+                while (pins.digitalReadPin(dht11pin) == 0);
+                while (pins.digitalReadPin(dht11pin) == 1);
+                for (let j = 0; j <= 32 - 1; j++) {
+                    while (pins.digitalReadPin(dht11pin) == 0);
+                    dhtcounter1 = 0
+                    while (pins.digitalReadPin(dht11pin) == 1) {
+                        dhtcounter1 += 1;
+                    }
+                    if (j > 15) {
+                        if (dhtcounter1 > 2) {
+                            dhtvalue1 = dhtvalue1 + (1 << (31 - j));
+                        }
+                    }
+                }
+                return ((dhtvalue1 & 0x0000ff00) >> 8);
+                break;
+            case 1:
+                while (pins.digitalReadPin(dht11pin) == 1);
+                while (pins.digitalReadPin(dht11pin) == 0);
+                while (pins.digitalReadPin(dht11pin) == 1);
+                let dhtvalue = 0;
+                let dhtcounter = 0;
+                for (let k = 0; k <= 32 - 1; k++) {
+                    while (pins.digitalReadPin(dht11pin) == 0);
+                    dhtcounter = 0
+                    while (pins.digitalReadPin(dht11pin) == 1) {
+                        dhtcounter += 1;
+                    }
+                    if (k > 15) {
+                        if (dhtcounter > 2) {
+                            dhtvalue = dhtvalue + (1 << (31 - k));
+                        }
+                    }
+                }
+                return Math.round((((dhtvalue & 0x0000ff00) >> 8) * 9 / 5) + 32);
+                break;
+            case 2:
+                while (pins.digitalReadPin(dht11pin) == 1);
+                while (pins.digitalReadPin(dht11pin) == 0);
+                while (pins.digitalReadPin(dht11pin) == 1);
+
+                let value = 0;
+                let counter = 0;
+
+                for (let l = 0; l <= 8 - 1; l++) {
+                    while (pins.digitalReadPin(dht11pin) == 0);
+                    counter = 0
+                    while (pins.digitalReadPin(dht11pin) == 1) {
+                        counter += 1;
+                    }
+                    if (counter > 3) {
+                        value = value + (1 << (7 - l));
+                    }
+                }
+                return value;
+            default:
+                return 0;
+        }
+    }
+
+    //% blockId=haha block="HaHa|huhu %hehe|huhu %hihi"
     //% group="gaga" weight=81
-    export function HaHa(hehe:string, hihi:string): void{
+    export function HaHa(hehe: number, hihi: string): void{
+
+    }
+
+    //% blockId=hehe block="HeHe|hoho %hehe|hoho %hihi"
+    //% group="gaga" weight=81
+    export function HeHe(hehe: number, hihi: string): void {
+
+    }
+
+    //% blockId=hihi block="HiHi|hoho %hehe|hoho %hihi"
+    //% group="gaga" weight=81
+    export function HiHi(hehe: number, hihi: string): void {
+
+    }
+
+    //% blockId=hoho block="HoHo|hoho %hehe|hoho %hihi"
+    //% group="gaga" weight=81
+    export function HoHo(hehe: number, hihi: string): void {
+
+    }
+
+    //% blockId=huhu block="HuHu|hoho %hehe|hoho %hihi"
+    //% group="gaga" weight=81
+    export function HuHu(hehe: number, hihi: string): void {
 
     }
 
 
-    //% blockId=custom_motor_dual block="Motor|speed %speed1|speed %speed2"
+    //% blockId=custom_motor_dual block="Motor|speed of Motor1 %speed1|speed of Motor2 %speed2"
     //% weight=43
     //% speed1.min=-255 speed1.max=255
     //% speed2.min=-255 speed2.max=255
